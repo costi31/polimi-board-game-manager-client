@@ -5,42 +5,31 @@ import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.jersey.client.ClientConfig;
 
+import com.herokuapp.polimiboardgamemanager.client.view.cli.CommandLine;
 import com.herokuapp.polimiboardgamemanager.model.User;
 
-/**
- * Hello world!
- *
- */
 public class App 
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        System.out.println( "Polimi Board Game Manager - Client" );
         ClientConfig config = new ClientConfig();
         Client client = ClientBuilder.newClient(config);
-        WebTarget service = client.target(getBaseURI());
-        List<User> allUsers = service.path("/users").request(MediaType.APPLICATION_JSON).get(new GenericType<List<User>>() {});
+//        WebTarget service = client.target(getBaseURI());
+//        List<User> allUsers = service.path("/users").request(MediaType.APPLICATION_JSON).get(new GenericType<List<User>>() {});
+//        
+//        for (User user: allUsers) {            
+//            System.out.println(user);
+//        }    
         
-        System.out.println(allUsers.get(0).toString());
-        
-        for (User user: allUsers) {
-        
-            long id = user.getId();
-            String fullName = user.getFullName();
-            
-            System.out.println("ID: "+id+"; fullName: "+fullName);
-        
-        }        
+        CommandLine.getInstance().run();
     }
     
     private static URI getBaseURI() {
