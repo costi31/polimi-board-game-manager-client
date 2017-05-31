@@ -12,7 +12,10 @@ public enum Command {
     // ======================================	
 	
 	QUIT(0, "Quit application"),
-	LOGIN(1, "Login with username and password. Format: login <username> <password>", 2);
+	LOGIN(1, "Login with username and password. Format: login <username> <password>", 2),
+	SHOW_USERS(2, "Show the users with optional filter and ordering criteria." +
+				  "Format: show_users [<filter_name>@<filter_value>;...] [<order_by>@<order_mode>]", -1),
+	SHOW_U(3, "Show a specific user. Format: show_u <id>", 1);
 	
     // ======================================
     // =             Constants              =
@@ -26,7 +29,7 @@ public enum Command {
 	
 	private final int code;
 	private final String description;
-	/** Number of parameters needed. */
+	/** Number of parameters needed. Value -1 means indefinite number. */
 	private final int parametersNeeded;
 	/** List of command parameters. */
 	private List<String> parameters;
@@ -39,8 +42,8 @@ public enum Command {
 		this.code = code;
 		this.description = description;
 		this.parametersNeeded = parametersNeeded;
-		if (parametersNeeded > 0)
-			parameters = new ArrayList<>(parametersNeeded);
+		if (parametersNeeded != 0)
+			parameters = new ArrayList<>();
 	}
 	
     // ======================================
@@ -57,7 +60,7 @@ public enum Command {
 			for (String param : splitLine) {
 				
 				// Ignore the first param that is the command itself
-				if (i >= com.parametersNeeded + 1) // take only needed parameters at most
+				if (com.parametersNeeded > 0 && i >= com.parametersNeeded + 1) // take only needed parameters at most
 					break;
 				if (i > 0)
 					com.parameters.add(param);
@@ -118,7 +121,7 @@ public enum Command {
 	 * @return <b>true</b> if it needs other parameters, <b>false</b> otherwise
 	 */
 	public boolean needsParameters() {
-		return parametersNeeded > 0;
+		return parametersNeeded != 0;
 	}
 
 	public String[] getParameters() {
