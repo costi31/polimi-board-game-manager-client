@@ -1,7 +1,9 @@
-package com.herokuapp.polimiboardgamemanager.client.view.cli;
+package com.herokuapp.polimiboardgamemanager.client.view;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.ws.rs.core.Link;
 
 public enum Command {
 	
@@ -9,7 +11,8 @@ public enum Command {
     // =             Commands               =
     // ======================================	
 	
-	QUIT(0, "Quit application");
+	QUIT(0, "Quit application"),
+	LOGIN(1, "Login with username and password. Format: login <username> <password>", 2);
 	
     // ======================================
     // =             Constants              =
@@ -21,10 +24,10 @@ public enum Command {
     // =             Attributes             =
     // ======================================	
 	
-	private int code;
-	private String description;
+	private final int code;
+	private final String description;
 	/** Number of parameters needed. */
-	private int parametersNeeded;
+	private final int parametersNeeded;
 	/** List of command parameters. */
 	private List<String> parameters;
 	
@@ -37,7 +40,7 @@ public enum Command {
 		this.description = description;
 		this.parametersNeeded = parametersNeeded;
 		if (parametersNeeded > 0)
-			parameters = new ArrayList<>();
+			parameters = new ArrayList<>(parametersNeeded);
 	}
 	
     // ======================================
@@ -52,15 +55,19 @@ public enum Command {
 			
 			int i = 0;
 			for (String param : splitLine) {
-				if (i == 0)
-					continue;
-				com.parameters.add(param);
+				
+				// Ignore the first param that is the command itself
+				if (i >= com.parametersNeeded + 1) // take only needed parameters at most
+					break;
+				if (i > 0)
+					com.parameters.add(param);
+				
 				i++;
 			}
 			
 			return com;
 		} catch (Exception e) {
-			throw new IllegalArgumentException(COMMAND_NOT_VALID_MSG);
+			throw new IllegalArgumentException(COMMAND_NOT_VALID_MSG, e);
 		}
 	}
 	
@@ -97,25 +104,14 @@ public enum Command {
 		return code;
 	}
 
-	public void setCode(int code) {
-		this.code = code;
-	}
-
 	public String getDescription() {
 		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public int getParametersNeeded() {
 		return parametersNeeded;
 	}
 
-	public void setParametersNeeded(int parametersNeeded) {
-		this.parametersNeeded = parametersNeeded;
-	}
 	
 	/**
 	 * Checks if the command needs other parameters
@@ -123,6 +119,10 @@ public enum Command {
 	 */
 	public boolean needsParameters() {
 		return parametersNeeded > 0;
+	}
+
+	public String[] getParameters() {
+		return parameters.toArray(new String[parameters.size()]);
 	}
 	
 }

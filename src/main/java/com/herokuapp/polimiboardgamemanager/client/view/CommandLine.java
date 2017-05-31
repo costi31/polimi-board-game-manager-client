@@ -1,36 +1,34 @@
-package com.herokuapp.polimiboardgamemanager.client.view.cli;
+package com.herokuapp.polimiboardgamemanager.client.view;
 
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Scanner;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-public class CommandLine {
+
+public class CommandLine extends ClientView {
 	
 	private static final String OUT_SYMBOL = "# ";
 	private static final String IN_SYMBOL = " > ";
 	
-	private static CommandLine instance = null;
-	
 	private PrintStream out;
 	private Scanner in;
-	
-
-    public static CommandLine getInstance() {
-        if (instance == null)
-            instance = new CommandLine();
-
-        return instance;
-    }
 
     /**
      * Instantiates a new CommandLine.
      */
-    private CommandLine() {
+    CommandLine() {
     	out = System.out;
     	in = new Scanner(System.in);
     }
     
+    @Override
     public void run() {
+    	out.println("Polimi Board Game Manager - Client");
+    	
     	Command com = null;
     	do {
     		
@@ -38,6 +36,8 @@ public class CommandLine {
 	
     		try {
     			com = Command.readCommand(in.nextLine());
+    			if (com != Command.QUIT)
+    				executeCommand(com);
     		} catch(Exception e) {
     			out.println(OUT_SYMBOL + e.getMessage() + " Retry!");
     		}
@@ -47,7 +47,24 @@ public class CommandLine {
     	out.println(OUT_SYMBOL + "Quitting...");
     }
     
-    public void printMenu() {
+    @Override
+    protected void executeCommand(Command com) throws Exception {
+    	String[] params = null;
+    	if (com.needsParameters())
+    		params = com.getParameters();
+    	
+    	switch(com) {
+    		case LOGIN:
+    			Response res = loginUser(params[0], params[1]);
+    			if (res.getStatus() == Response.Status.OK.getStatusCode())
+    				out.println(OUT_SYMBOL + "Login successful!");
+    			else
+    				out.println(OUT_SYMBOL + "Login error! Wrong username or password!");
+    			break;
+    	}
+    }
+    
+    private void printMenu() {
     	out.println("");
     	out.println(OUT_SYMBOL + "AVAILABLE COMMANDS (<code> - <name> : <description>)");
     	out.println("");
@@ -61,7 +78,7 @@ public class CommandLine {
     	out.println("-----------------------------------------------");
     	out.println("");
     	
-    	out.println("Enter the desired command (you can write code or name):");
+    	out.println(OUT_SYMBOL + "Enter the desired command (you can write code or name):");
     	out.print(IN_SYMBOL);
     }
 }
