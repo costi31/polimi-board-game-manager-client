@@ -2,8 +2,8 @@ package com.herokuapp.polimiboardgamemanager.client.view;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.ws.rs.core.Link;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public enum Command {
 	
@@ -50,14 +50,30 @@ public enum Command {
     // =          Static methods            =
     // ====================================== 	
 	
-	public static Command readCommand(String line) {
-		String[] splitLine = line.split(" ");
-			
+	public static Command readCommand(String line) {		
+		// Split the line by spaces except when they are inside quotes
+		List<String> matchList = new ArrayList<>();
+		Pattern regex = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
+		Matcher regexMatcher = regex.matcher(line);
+		while (regexMatcher.find()) {
+		    if (regexMatcher.group(1) != null) {
+		        // Add double-quoted string without the quotes
+		        matchList.add(regexMatcher.group(1));
+		    } else if (regexMatcher.group(2) != null) {
+		        // Add single-quoted string without the quotes
+		        matchList.add(regexMatcher.group(2));
+		    } else {
+		        // Add unquoted word
+		        matchList.add(regexMatcher.group());
+		    }
+		} 		
+		
+		// Read command and parameters	
 		try {
-			Command com = getCommand(splitLine[0]);
+			Command com = getCommand(matchList.get(0));
 			
 			int i = 0;
-			for (String param : splitLine) {
+			for (String param : matchList) {
 				
 				// Ignore the first param that is the command itself
 				if (com.parametersNeeded > 0 && i >= com.parametersNeeded + 1) // take only needed parameters at most

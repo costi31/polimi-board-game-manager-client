@@ -47,6 +47,7 @@ public abstract class ClientView {
 	protected abstract void executeCommand(Command com) throws Exception;
 	
 	protected Response loginUser(String username, String password) {
+		authorizationBearer = null;
         Form form = new Form();
         form.param("username", username);
         form.param("password", password);
