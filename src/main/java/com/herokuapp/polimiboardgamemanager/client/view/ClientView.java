@@ -71,6 +71,16 @@ public abstract class ClientView {
 		return target.path(USERS_PATH+"/"+id).request(MediaType.APPLICATION_JSON_TYPE).get(User.class);
 	}
 	
+	protected Response createUser(String fullName, String username, String password) {
+        Form form = new Form();
+        // Here I assume that there is a test user with username=bob and password=bob
+        form.param("fullName", fullName);
+        form.param("username", username);
+        form.param("password", password);
+        return target.path(USERS_PATH).request().post(Entity.form(form));
+        
+	}
+	
 	private void setup() {
         config = new ClientConfig();
         client = ClientBuilder.newClient(config);		

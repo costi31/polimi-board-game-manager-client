@@ -1,6 +1,7 @@
 package com.herokuapp.polimiboardgamemanager.client.view;
 
 import java.io.PrintStream;
+import java.net.URI;
 import java.util.List;
 import java.util.Scanner;
 
@@ -82,6 +83,22 @@ public class CommandLine extends ClientView {
     			else
     				out.println(ERROR_SYMBOL + "Error! User " + id + " doesn't exist!");
     			break;
+    		case CREATE_U:
+    			String fullName = params[0];
+    			String username = params[1];
+    			String password = params[2];
+    			
+    			Response response = createUser(fullName, username, password);
+    	        
+    			if (response.getStatus() == Response.Status.CREATED.getStatusCode()) {
+	    	        URI newUserLocation = response.getLocation();
+	    	        System.out.print(newUserLocation);
+	    	        String path = newUserLocation.getPath();
+	    	        out.println(OUT_SYMBOL + "New user successfully created with id = " +
+	    	        			path.substring(path.lastIndexOf('/')+1) );
+    			} else {
+    				out.println(ERROR_SYMBOL + "Error! "+response.readEntity(String.class));
+    			}
     		default:
     	}
     }

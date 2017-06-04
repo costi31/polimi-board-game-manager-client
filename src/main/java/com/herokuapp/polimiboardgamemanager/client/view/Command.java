@@ -15,7 +15,8 @@ public enum Command {
 	LOGIN(1, "Login with username and password. Format: login <username> <password>", 2),
 	SHOW_USERS(2, "Show the users with optional filter and ordering criteria." +
 				  "Format: show_users [<filter_name>@<filter_value>;...] [<order_by>@<order_mode>]", -1),
-	SHOW_U(3, "Show a specific user. Format: show_u <id>", 1);
+	SHOW_U(3, "Show a specific user. Format: show_u <id>", 1),
+	CREATE_U(4, "Create a new user. Format: create_u <fullName> <username> <password>", 3);
 	
     // ======================================
     // =             Constants              =
