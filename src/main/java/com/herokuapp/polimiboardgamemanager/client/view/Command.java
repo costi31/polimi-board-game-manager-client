@@ -55,7 +55,7 @@ public enum Command {
 		// Split the line by spaces except when they are inside quotes
 		List<String> matchList = new ArrayList<>();
 		Pattern regex = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
-		Matcher regexMatcher = regex.matcher(line);
+		Matcher regexMatcher = regex.matcher(line.trim());
 		while (regexMatcher.find()) {
 		    if (regexMatcher.group(1) != null) {
 		        // Add double-quoted string without the quotes
