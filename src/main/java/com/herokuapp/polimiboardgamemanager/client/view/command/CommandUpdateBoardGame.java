@@ -50,7 +50,6 @@ public class CommandUpdateBoardGame implements Command {
 	        return outSymbol + "New board game successfully created with id = " +
 	        	   path.substring(path.lastIndexOf('/')+1);
 		} else {
-			System.out.println(res);
 			return errorSymbol + "Error! "+res.readEntity(String.class);
 		}		
 	}
