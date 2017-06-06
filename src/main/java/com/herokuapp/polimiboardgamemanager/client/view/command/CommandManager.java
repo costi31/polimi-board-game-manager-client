@@ -75,11 +75,15 @@ public class CommandManager {
 		commandsMap.put(Command.HELP, new CommandHelp());
 		commandsMap.put(Command.LOGIN, new CommandLogin());
 		commandsMap.put(Command.QUIT, new CommandQuit());
+		
 		commandsMap.put(Command.SHOW_USERS, new CommandShowUsers());
 		commandsMap.put(Command.SHOW_USER, new CommandShowUser());
 		commandsMap.put(Command.CREATE_USER, new CommandCreateUser());
 		commandsMap.put(Command.UPDATE_USER, new CommandUpdateUser());
 		commandsMap.put(Command.DELETE_USER, new CommandDeleteUser());
+		
+		commandsMap.put(Command.SHOW_BOARDGAMES, new CommandShowBoardGames());
+		commandsMap.put(Command.SHOW_BOARDGAME, new CommandShowBoardGame());
 		commandsMap.put(Command.CREATE_BOARDGAME, new CommandCreateBoardGame());
 		
 		// Setup JCommander

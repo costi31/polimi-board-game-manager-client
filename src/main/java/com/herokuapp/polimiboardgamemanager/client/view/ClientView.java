@@ -112,6 +112,20 @@ public abstract class ClientView {
     // =       Board games management       =
     // ======================================	
 	
+	public List<BoardGame> getAllBoardGames(Object[] filters, Object[] orders) {
+		WebTarget tempTarget = target.path(BOARDGAMES_PATH);
+		if (filters != null)
+			tempTarget = tempTarget.queryParam("filter", filters);
+		if (orders != null)
+			tempTarget = tempTarget.queryParam("order", orders);
+		
+		return tempTarget.request(MediaType.APPLICATION_JSON_TYPE).get(new GenericType<List<BoardGame>>() {});
+	}	
+	
+	public BoardGame getBoardGame(long id) {
+		return target.path(BOARDGAMES_PATH+"/"+id).request(MediaType.APPLICATION_JSON_TYPE).get(BoardGame.class);
+	}	
+	
 	public Response createBoardGame(BoardGame boardGame) {
         return target.path(BOARDGAMES_PATH).request().
         		header(HttpHeaders.AUTHORIZATION, authorizationBearer).
