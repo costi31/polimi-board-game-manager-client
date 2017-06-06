@@ -3,7 +3,7 @@ package com.herokuapp.polimiboardgamemanager.client.view.command;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
-@Parameters(commandDescription="Login with username and password.")
+@Parameters(commandNames=Command.LOGIN, commandDescription="Login with username and password.")
 public class CommandLogin implements Command {
 	@Parameter(names="-u", description="username", order=0)
 	private String username;

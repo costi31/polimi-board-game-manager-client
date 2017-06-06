@@ -5,7 +5,7 @@ import java.util.List;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
-@Parameters(commandDescription="Show the entire usage menu or the usage of a single command.")
+@Parameters(commandNames=Command.HELP, commandDescription="Show the entire usage menu or the usage of a single command.")
 public class CommandHelp implements Command {
 	
 	@Parameter(names = {"--c", "--command"},

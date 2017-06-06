@@ -5,6 +5,8 @@ public interface Command {
 	public static final String HELP = "help";
 	public static final String LOGIN = "login";
 	public static final String SHOW_USERS = "show_users";
+	public static final String SHOW_USER = "show_u";
+	public static final String CREATE_USER = "create_u";
 	
 	public String getName();
 	public Object[] getParameters();

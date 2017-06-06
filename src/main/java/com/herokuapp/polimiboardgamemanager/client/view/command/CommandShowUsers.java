@@ -5,7 +5,7 @@ import java.util.List;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
-@Parameters(commandDescription="Show the users with optional filter and ordering criteria.")
+@Parameters(commandNames=Command.SHOW_USERS, commandDescription="Show the users with optional filter and ordering criteria.")
 public class CommandShowUsers implements Command {
 	
 	@Parameter(names = {"--f", "--filter"},

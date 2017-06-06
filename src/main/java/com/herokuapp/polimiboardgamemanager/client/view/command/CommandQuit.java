@@ -2,7 +2,7 @@ package com.herokuapp.polimiboardgamemanager.client.view.command;
 
 import com.beust.jcommander.Parameters;
 
-@Parameters(commandDescription="Quit application.")
+@Parameters(commandNames=Command.QUIT, commandDescription="Quit application.")
 public class CommandQuit implements Command {
 	
 	@Override

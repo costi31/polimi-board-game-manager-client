@@ -76,15 +76,17 @@ public class CommandManager {
 		commandsMap.put(Command.LOGIN, new CommandLogin());
 		commandsMap.put(Command.QUIT, new CommandQuit());
 		commandsMap.put(Command.SHOW_USERS, new CommandShowUsers());
+		commandsMap.put(Command.SHOW_USER, new CommandShowUser());
+		commandsMap.put(Command.CREATE_USER, new CommandCreateUser());
 		
 		// Setup JCommander
 		jc = JCommander.newBuilder().build();
 		jc.setProgramName("");
+//		jc.setAllowAbbreviatedOptions(true);
+		jc.setCaseSensitiveOptions(false);
 		
-		for (Map.Entry<String, Command> entry : commandsMap.entrySet()) {
-		    String key = entry.getKey();
-		    Command value = entry.getValue();
-		    jc.addCommand(key, value);
+		for (Command com : commandsMap.values()) {
+		    jc.addCommand(com);
 		}
 	}
 }
