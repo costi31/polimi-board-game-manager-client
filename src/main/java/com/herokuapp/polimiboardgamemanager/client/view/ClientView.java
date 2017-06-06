@@ -16,6 +16,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.jersey.client.ClientConfig;
 
+import com.herokuapp.polimiboardgamemanager.client.view.command.Command;
 import com.herokuapp.polimiboardgamemanager.model.User;
 
 public abstract class ClientView {
@@ -39,7 +40,7 @@ public abstract class ClientView {
 	}
 	
     private static URI getBaseURI() {
-        return UriBuilder.fromUri("https://polimi-board-game-manager.herokuapp.com/").build();
+        return UriBuilder.fromUri("https://polimi-board-game-manager.herokuapp.com/api/").build();
     }   	
 	
 	public abstract void run();
@@ -73,13 +74,27 @@ public abstract class ClientView {
 	
 	protected Response createUser(String fullName, String username, String password) {
         Form form = new Form();
-        // Here I assume that there is a test user with username=bob and password=bob
         form.param("fullName", fullName);
         form.param("username", username);
         form.param("password", password);
         return target.path(USERS_PATH).request().post(Entity.form(form));
         
 	}
+	
+	protected Response updateUser(long id, String fullName, String username, String password) {
+        Form form = new Form();
+        if (fullName != null)
+        	form.param("fullName", fullName);
+        if (username != null)
+        	form.param("username", username);    
+        if (password != null)
+        	form.param("password", password);
+        
+        return target.path(USERS_PATH+"/"+id).request()
+        		.header(HttpHeaders.AUTHORIZATION, authorizationBearer)
+        		.put(Entity.form(form));
+        
+	}	
 	
 	private void setup() {
         config = new ClientConfig();
