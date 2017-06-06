@@ -94,7 +94,13 @@ public abstract class ClientView {
         		.header(HttpHeaders.AUTHORIZATION, authorizationBearer)
         		.put(Entity.form(form));
         
-	}	
+	}
+	
+	protected Response deleteUser(long id) {
+		return target.path(USERS_PATH+"/"+id).request()
+				.header(HttpHeaders.AUTHORIZATION,  authorizationBearer)
+				.delete();
+	}
 	
 	private void setup() {
         config = new ClientConfig();

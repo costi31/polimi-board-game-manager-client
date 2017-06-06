@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response;
 
 import com.herokuapp.polimiboardgamemanager.client.view.command.Command;
 import com.herokuapp.polimiboardgamemanager.client.view.command.CommandCreateUser;
+import com.herokuapp.polimiboardgamemanager.client.view.command.CommandDeleteUser;
 import com.herokuapp.polimiboardgamemanager.client.view.command.CommandHelp;
 import com.herokuapp.polimiboardgamemanager.client.view.command.CommandLogin;
 import com.herokuapp.polimiboardgamemanager.client.view.command.CommandManager;
@@ -145,6 +146,21 @@ public class CommandLine extends ClientView {
     	        			path.substring(path.lastIndexOf('/')+1) );
 			} else {
 				out.println(ERROR_SYMBOL + "Error! "+response.readEntity(String.class));
+			}
+    	} else if (cn.equals(Command.DELETE_USER)) {
+    		Long id = ((CommandDeleteUser) com).getId();
+    		
+    		if (id == null) {
+    			out.println(ERROR_SYMBOL + "Error! You must specify an id!");
+    			return;
+    		}
+			
+			Response res = deleteUser(id);
+	        
+			if (res.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
+    	        out.println(OUT_SYMBOL + "User with id " + id + " has been deleted succesfully." );
+			} else {
+				out.println(ERROR_SYMBOL + "Error! "+res.readEntity(String.class));
 			}
     	}
     }
