@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public enum Command {
+public enum Command_Old {
 	
     // ======================================
     // =             Commands               =
@@ -35,11 +35,11 @@ public enum Command {
 	/** List of command parameters. */
 	private List<String> parameters;
 	
-	private Command(int code, String description) {
+	private Command_Old(int code, String description) {
 		this(code, description, 0);
 	}
 	
-	private Command(int code, String description, int parametersNeeded) {
+	private Command_Old(int code, String description, int parametersNeeded) {
 		this.code = code;
 		this.description = description;
 		this.parametersNeeded = parametersNeeded;
@@ -51,7 +51,7 @@ public enum Command {
     // =          Static methods            =
     // ====================================== 	
 	
-	public static Command readCommand(String line) {		
+	public static Command_Old readCommand(String line) {		
 		// Split the line by spaces except when they are inside quotes
 		List<String> matchList = new ArrayList<>();
 		Pattern regex = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
@@ -71,7 +71,7 @@ public enum Command {
 		
 		// Read command and parameters	
 		try {
-			Command com = getCommand(matchList.get(0));
+			Command_Old com = getCommand(matchList.get(0));
 			
 			int i = 0;
 			for (String param : matchList) {
@@ -91,9 +91,9 @@ public enum Command {
 		}
 	}
 	
-	public static Command getCommand(String comString) {
+	public static Command_Old getCommand(String comString) {
         try {       	
-        	Command com = getCommandFromCode(Integer.parseInt(comString));
+        	Command_Old com = getCommandFromCode(Integer.parseInt(comString));
         	if (com != null)
         		return com;
         	else
@@ -107,8 +107,8 @@ public enum Command {
         }
 	}
 	
-	public static Command getCommandFromCode(int c) {
-		for (Command com : values()) {
+	public static Command_Old getCommandFromCode(int c) {
+		for (Command_Old com : values()) {
 			if (com.code == c)
 				return com;
 		}

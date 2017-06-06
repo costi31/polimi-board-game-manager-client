@@ -16,6 +16,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.jersey.client.ClientConfig;
 
+import com.herokuapp.polimiboardgamemanager.client.view.command.Command;
 import com.herokuapp.polimiboardgamemanager.model.User;
 
 public abstract class ClientView {
@@ -39,7 +40,7 @@ public abstract class ClientView {
 	}
 	
     private static URI getBaseURI() {
-        return UriBuilder.fromUri("https://polimi-board-game-manager.herokuapp.com/").build();
+        return UriBuilder.fromUri("https://polimi-board-game-manager.herokuapp.com/api/").build();
     }   	
 	
 	public abstract void run();

@@ -1,12 +1,16 @@
 package com.herokuapp.polimiboardgamemanager.client.view;
 
 import java.io.PrintStream;
-import java.net.URI;
 import java.util.List;
 import java.util.Scanner;
 
 import javax.ws.rs.core.Response;
 
+import com.herokuapp.polimiboardgamemanager.client.view.command.Command;
+import com.herokuapp.polimiboardgamemanager.client.view.command.CommandHelp;
+import com.herokuapp.polimiboardgamemanager.client.view.command.CommandLogin;
+import com.herokuapp.polimiboardgamemanager.client.view.command.CommandManager;
+import com.herokuapp.polimiboardgamemanager.client.view.command.CommandShowUsers;
 import com.herokuapp.polimiboardgamemanager.model.User;
 
 
@@ -19,6 +23,7 @@ public class CommandLine extends ClientView {
 	
 	private PrintStream out;
 	private Scanner in;
+	private CommandManager comManager;
 
     /**
      * Instantiates a new CommandLine.
@@ -26,6 +31,7 @@ public class CommandLine extends ClientView {
     CommandLine() {
     	out = System.out;
     	in = new Scanner(System.in);
+    	comManager = CommandManager.getInstance();
     }
     
     @Override
@@ -34,71 +40,82 @@ public class CommandLine extends ClientView {
     	
     	Command com = null;
     	do {
-    		
-    		printMenu();
+    		   		
+    		if (com == null)
+    			printMenu();
 	
     		try {
-    			com = Command.readCommand(in.nextLine());
-    			if (com != Command.QUIT)
+        		String line = in.nextLine();
+        		if (line.isEmpty()) {
+        			com = null;
+        			continue;
+        		}
+    			com = comManager.parseCommandLine(line);
+    			if (! com.getName().equals(Command.QUIT))
     				executeCommand(com);
+    			
+    			printInputLine();					
     		} catch(Exception e) {
     			out.println(ERROR_SYMBOL + "Command error! Retry!");
+    			printInputLine();
     		}
     		
-    	} while(com != Command.QUIT);
+    		
+    		
+    	} while(com == null || com.getName() != Command.QUIT);
     	
     	out.println(OUT_SYMBOL + "Quit!");
     }
     
     @Override
-    protected void executeCommand(Command com) throws Exception {
-    	String[] params = null;
-    	if (com.needsParameters())
-    		params = com.getParameters();
-    	
-    	switch(com) {
-    		case LOGIN:
-    			Response res = loginUser(params[0], params[1]);
+    protected void executeCommand(Command com) throws Exception {    	
+    	switch(com.getName()) {
+    		case Command.HELP:
+    			List<String> helpCommands = ((CommandHelp) com).getCommands();
+    			if (helpCommands != null)
+    				comManager.printUsage(helpCommands.toArray(new String[helpCommands.size()]));
+    			else
+    				comManager.printUsage();
+    			break;
+    		case Command.LOGIN:
+    			Response res = loginUser( ((CommandLogin) com).getUsername(), ((CommandLogin) com).getPassword());
     			if (res.getStatus() == Response.Status.OK.getStatusCode())
     				out.println(OUT_SYMBOL + "Login successful!");
     			else
     				out.println(ERROR_SYMBOL + "Login failed! Wrong username or password!");
     			break;
-    		case SHOW_USERS:
-    			String[] filters = null;
-    			String[] orders = null;
-    			if (params.length > 0)
-    				filters = params[0].split(";");
-    			if (params.length == 2)
-    				orders = params[1].split(";");
-    			List<User> users = getAllUsers(filters, orders);
+    		case Command.SHOW_USERS:
+    			List<String> filters = ((CommandShowUsers) com).getFilters();
+    			List<String> orders = ((CommandShowUsers) com).getOrders();
+    			List<User> users = getAllUsers(filters != null ? filters.toArray() : null,
+    										   orders != null ? orders.toArray() : null);
     			for (User u : users)
     				out.println(u);
     			break;
-    		case SHOW_U:
-    			long id = Long.parseLong(params[0]);
-    			User u = getUser(id);
-    			if (u != null)
-    				out.println(OUT_SYMBOL + "User " + id + " info: "+u.toString());
-    			else
-    				out.println(ERROR_SYMBOL + "Error! User " + id + " doesn't exist!");
-    			break;
-    		case CREATE_U:
-    			String fullName = params[0];
-    			String username = params[1];
-    			String password = params[2];
-    			
-    			Response response = createUser(fullName, username, password);
-    	        
-    			if (response.getStatus() == Response.Status.CREATED.getStatusCode()) {
-	    	        URI newUserLocation = response.getLocation();
-	    	        System.out.print(newUserLocation);
-	    	        String path = newUserLocation.getPath();
-	    	        out.println(OUT_SYMBOL + "New user successfully created with id = " +
-	    	        			path.substring(path.lastIndexOf('/')+1) );
-    			} else {
-    				out.println(ERROR_SYMBOL + "Error! "+response.readEntity(String.class));
-    			}
+//    		case SHOW_U:
+//    			long id = Long.parseLong(params[0]);
+//    			User u = getUser(id);
+//    			if (u != null)
+//    				out.println(OUT_SYMBOL + "User " + id + " info: "+u.toString());
+//    			else
+//    				out.println(ERROR_SYMBOL + "Error! User " + id + " doesn't exist!");
+//    			break;
+//    		case CREATE_U:
+//    			String fullName = params[0];
+//    			String username = params[1];
+//    			String password = params[2];
+//    			
+//    			Response response = createUser(fullName, username, password);
+//    	        
+//    			if (response.getStatus() == Response.Status.CREATED.getStatusCode()) {
+//	    	        URI newUserLocation = response.getLocation();
+//	    	        System.out.print(newUserLocation);
+//	    	        String path = newUserLocation.getPath();
+//	    	        out.println(OUT_SYMBOL + "New user successfully created with id = " +
+//	    	        			path.substring(path.lastIndexOf('/')+1) );
+//    			} else {
+//    				out.println(ERROR_SYMBOL + "Error! "+response.readEntity(String.class));
+//    			}
     		default:
     	}
     }
@@ -106,19 +123,17 @@ public class CommandLine extends ClientView {
     private void printMenu() {
     	out.println("");
     	out.println(LINE);
-    	out.println(OUT_SYMBOL + "AVAILABLE COMMANDS (<code> - <name> : <description>)");
+    	out.println(OUT_SYMBOL + "AVAILABLE COMMANDS");
     	out.println("");
-    	for (Command availCom : Command.values()) {
-    		out.println("\t" + availCom.getCode() + " - " + 
-    					availCom.toString().toLowerCase() + " : " + 
-    					availCom.getDescription());
-    	}
     	
-    	out.println("");
+    	comManager.printUsage();
+    	
+    	printInputLine();
+    }
+    
+    private void printInputLine() {
     	out.println(LINE);
-    	out.println("");
-    	
-    	out.println(OUT_SYMBOL + "Enter the desired command (you can write code or name):");
+    	out.println(OUT_SYMBOL + "Enter the desired command or \"help\" to show the menu:");
     	out.print(IN_SYMBOL);
     }
 }
