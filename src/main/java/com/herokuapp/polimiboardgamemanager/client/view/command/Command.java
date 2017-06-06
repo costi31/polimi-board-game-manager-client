@@ -19,6 +19,12 @@ public interface Command {
 	public static final String UPDATE_BOARDGAME = "update_b";
 	public static final String DELETE_BOARDGAME = "delete_b";
 	
+	public static final String SHOW_PLAYS = "show_plays";
+	public static final String SHOW_PLAY = "show_p";
+	public static final String CREATE_PLAY = "create_p";
+	public static final String UPDATE_PLAY = "update_p";
+	public static final String DELETE_PLAY = "delete_p";	
+	
 	public String getName();
 	public Object[] getParameters();
 	public String execute(ClientView cv, String outSymbol, String errorSymbol) throws Exception;

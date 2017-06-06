@@ -1,6 +1,8 @@
 package com.herokuapp.polimiboardgamemanager.client.view;
 
 import java.net.URI;
+import java.sql.Time;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.ws.rs.client.Client;
@@ -18,6 +20,7 @@ import org.glassfish.jersey.client.ClientConfig;
 
 import com.herokuapp.polimiboardgamemanager.client.view.command.Command;
 import com.herokuapp.polimiboardgamemanager.model.BoardGame;
+import com.herokuapp.polimiboardgamemanager.model.Play;
 import com.herokuapp.polimiboardgamemanager.model.User;
 
 public abstract class ClientView {
@@ -91,7 +94,7 @@ public abstract class ClientView {
         
 	}
 	
-	public Response updateUser(long id, String fullName, String username, String password) {
+	public Response updateUser(Long id, String fullName, String username, String password) {
         Form form = new Form();
         if (fullName != null)
         	form.param("fullName", fullName);
@@ -106,7 +109,7 @@ public abstract class ClientView {
         
 	}
 	
-	public Response deleteUser(long id) {
+	public Response deleteUser(Long id) {
 		return target.path(USERS_PATH+"/"+id).request()
 				.header(HttpHeaders.AUTHORIZATION,  authorizationBearer)
 				.delete();
@@ -126,7 +129,7 @@ public abstract class ClientView {
 		return tempTarget.request(MediaType.APPLICATION_JSON_TYPE).get(new GenericType<List<BoardGame>>() {});
 	}	
 	
-	public BoardGame getBoardGame(long id) {
+	public BoardGame getBoardGame(Long id) {
 		try {
 			return target.path(BOARDGAMES_PATH+"/"+id).request(MediaType.APPLICATION_JSON_TYPE).get(BoardGame.class);
 		} catch(Exception e) {
@@ -140,7 +143,7 @@ public abstract class ClientView {
         		post(Entity.entity(boardGame, MediaType.APPLICATION_JSON_TYPE));
 	}
 	
-	public Response updateBoardGame(long id, String name, String designers, String cover) {        
+	public Response updateBoardGame(Long id, String name, String designers, String cover) {        
         BoardGame b = getBoardGame(id);
         if (b == null)
         	b = new BoardGame(name, designers, cover);
@@ -152,18 +155,72 @@ public abstract class ClientView {
         if (cover != null)
         	b.setCover(cover);
         
-        System.out.println(b);
-        
         return target.path(BOARDGAMES_PATH+"/"+id).request()
         		.header(HttpHeaders.AUTHORIZATION, authorizationBearer)
         		.put(Entity.entity(b, MediaType.APPLICATION_JSON_TYPE));        
 	}	
 	
-	public Response deleteBoardGame(long id) {
+	public Response deleteBoardGame(Long id) {
 		return target.path(BOARDGAMES_PATH+"/"+id).request()
 				.header(HttpHeaders.AUTHORIZATION,  authorizationBearer)
 				.delete();
 	}	
+	
+    // ======================================
+    // =       Plays management       =
+    // ======================================	
+	
+	public List<Play> getAllPlays(Long userId, Object[] filters, Object[] orders) {
+		WebTarget tempTarget = target.path(USERS_PATH+"/"+userId+"/plays");
+		if (filters != null)
+			tempTarget = tempTarget.queryParam("filter", filters);
+		if (orders != null)
+			tempTarget = tempTarget.queryParam("order", orders);
+		
+		return tempTarget.request(MediaType.APPLICATION_JSON_TYPE).get(new GenericType<List<Play>>() {});
+	}	
+	
+	public Play getPlay(Long userId, Long id) {
+		try {
+			return target.path(USERS_PATH+"/"+userId+"/plays/"+id).request(MediaType.APPLICATION_JSON_TYPE).get(Play.class);
+		} catch(Exception e) {
+			return null;
+		}
+	}	
+	
+	public Response createPlay(Play play) {
+        return target.path(USERS_PATH+"/"+play.getUserCreator().getId()+"/plays").request().
+        		header(HttpHeaders.AUTHORIZATION, authorizationBearer).
+        		post(Entity.entity(play, MediaType.APPLICATION_JSON_TYPE));
+	}
+	
+	public Response updatePlay(Long userId, Long id, Long boardGameId, Calendar date, Integer playersInvolved, 
+							   boolean completed, Time timeToComplete, Long userWinnerId) { 
+		
+        Play p = getPlay(userId, id);
+        if (p == null)
+        	p = new Play(getUser(userId), getBoardGame(boardGameId), date, playersInvolved, 
+        				 completed, timeToComplete, getUser(userWinnerId));
+        
+        if (boardGameId != null)
+        	p.setBoardGame(getBoardGame(boardGameId));
+        if (playersInvolved != null)
+        	p.setPlayersInvolved(playersInvolved);
+        if (timeToComplete != null)
+        	p.setTimeToComplete(timeToComplete);
+        if (userWinnerId != null)
+        	p.setUserWinner(getUser(userWinnerId));
+        
+        return target.path(USERS_PATH+"/"+userId+"/plays/"+id).request()
+        		.header(HttpHeaders.AUTHORIZATION, authorizationBearer)
+        		.put(Entity.entity(p, MediaType.APPLICATION_JSON_TYPE));        
+	}	
+	
+	public Response deletePlay(Long userId, Long id) {
+		return target.path(USERS_PATH+"/"+userId+"/plays/"+id).request()
+				.header(HttpHeaders.AUTHORIZATION,  authorizationBearer)
+				.delete();
+	}		
 	
     // ======================================
     // =               Setup                =
