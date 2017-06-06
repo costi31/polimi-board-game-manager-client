@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import com.herokuapp.polimiboardgamemanager.client.view.ClientView;
+import com.herokuapp.polimiboardgamemanager.model.User;
 
 @Parameters(commandNames=Command.SHOW_USERS, commandDescription="Show the users with optional filter and ordering criteria.")
 public class CommandShowUsers implements Command {
@@ -26,6 +28,19 @@ public class CommandShowUsers implements Command {
 	@Override
 	public Object[] getParameters() {
 		return new Object[]{filters, orders};
+	}
+	
+	@Override
+	public String execute(ClientView cv, String outSymbol, String errorSymbol) throws Exception {
+		List<User> users = cv.getAllUsers(filters != null ? filters.toArray() : null,
+									   	  orders != null ? orders.toArray() : null);
+		
+		StringBuilder out = new StringBuilder();
+		
+		for (User u : users)
+			out.append(u + "\n");
+		
+		return out.toString();
 	}
 
 	public List<String> getFilters() {

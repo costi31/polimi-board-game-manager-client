@@ -47,7 +47,7 @@ public abstract class ClientView {
 	
 	protected abstract void executeCommand(Command com) throws Exception;
 	
-	protected Response loginUser(String username, String password) {
+	public Response loginUser(String username, String password) {
 		authorizationBearer = null;
         Form form = new Form();
         form.param("username", username);
@@ -58,7 +58,7 @@ public abstract class ClientView {
         return res;
 	}
 	
-	protected List<User> getAllUsers(Object[] filters, Object[] orders) {
+	public List<User> getAllUsers(Object[] filters, Object[] orders) {
 		WebTarget tempTarget = target.path(USERS_PATH);
 		if (filters != null)
 			tempTarget = tempTarget.queryParam("filter", filters);
@@ -68,11 +68,11 @@ public abstract class ClientView {
 		return tempTarget.request(MediaType.APPLICATION_JSON_TYPE).get(new GenericType<List<User>>() {});
 	}
 	
-	protected User getUser(long id) {
+	public User getUser(long id) {
 		return target.path(USERS_PATH+"/"+id).request(MediaType.APPLICATION_JSON_TYPE).get(User.class);
 	}
 	
-	protected Response createUser(String fullName, String username, String password) {
+	public Response createUser(String fullName, String username, String password) {
         Form form = new Form();
         form.param("fullName", fullName);
         form.param("username", username);
@@ -81,7 +81,7 @@ public abstract class ClientView {
         
 	}
 	
-	protected Response updateUser(long id, String fullName, String username, String password) {
+	public Response updateUser(long id, String fullName, String username, String password) {
         Form form = new Form();
         if (fullName != null)
         	form.param("fullName", fullName);
@@ -96,7 +96,7 @@ public abstract class ClientView {
         
 	}
 	
-	protected Response deleteUser(long id) {
+	public Response deleteUser(long id) {
 		return target.path(USERS_PATH+"/"+id).request()
 				.header(HttpHeaders.AUTHORIZATION,  authorizationBearer)
 				.delete();

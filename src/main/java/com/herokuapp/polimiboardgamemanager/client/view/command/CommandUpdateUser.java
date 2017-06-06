@@ -1,7 +1,12 @@
 package com.herokuapp.polimiboardgamemanager.client.view.command;
 
+import java.net.URI;
+
+import javax.ws.rs.core.Response;
+
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import com.herokuapp.polimiboardgamemanager.client.view.ClientView;
 
 @Parameters(commandNames=Command.UPDATE_USER,
 			commandDescription="Update a user with the optional provided information (you must login before) "
@@ -28,6 +33,25 @@ public class CommandUpdateUser implements Command {
 	@Override
 	public Object[] getParameters() {
 		return new Object[]{id, fullName, username, password};
+	}
+	
+	@Override
+	public String execute(ClientView cv, String outSymbol, String errorSymbol) throws Exception {	
+		if (id == null)
+			return errorSymbol + "Error! You must specify an id!";
+		
+		Response res = cv.updateUser(id, fullName, username, password);
+        
+		if (res.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
+	        return outSymbol + "User with id " + id + " has been updated succesfully.";
+		} else if (res.getStatus() == Response.Status.CREATED.getStatusCode()) {
+	        URI newUserLocation = res.getLocation();
+	        String path = newUserLocation.getPath();
+	        return outSymbol + "New user successfully created with id = " +
+	        	   path.substring(path.lastIndexOf('/')+1);
+		} else {
+			return errorSymbol + "Error! "+res.readEntity(String.class);
+		}		
 	}
 
 	public Long getId() {

@@ -1,5 +1,7 @@
 package com.herokuapp.polimiboardgamemanager.client.view.command;
 
+import com.herokuapp.polimiboardgamemanager.client.view.ClientView;
+
 public interface Command {
 	public static final String QUIT = "quit";
 	public static final String HELP = "help";
@@ -9,7 +11,9 @@ public interface Command {
 	public static final String CREATE_USER = "create_u";
 	public static final String UPDATE_USER = "update_u";
 	public static final String DELETE_USER = "delete_u";
+	public static final String CREATE_BOARDGAME = "create_b";
 	
 	public String getName();
 	public Object[] getParameters();
+	public String execute(ClientView cv, String outSymbol, String errorSymbol) throws Exception;
 }

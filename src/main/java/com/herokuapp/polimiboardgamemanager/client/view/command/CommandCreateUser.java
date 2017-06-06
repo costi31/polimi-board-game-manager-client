@@ -1,7 +1,12 @@
 package com.herokuapp.polimiboardgamemanager.client.view.command;
 
+import java.net.URI;
+
+import javax.ws.rs.core.Response;
+
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import com.herokuapp.polimiboardgamemanager.client.view.ClientView;
 
 @Parameters(commandNames=Command.CREATE_USER, commandDescription="Create a new user with the desired information.")
 public class CommandCreateUser implements Command {
@@ -24,6 +29,20 @@ public class CommandCreateUser implements Command {
 	public Object[] getParameters() {
 		return new Object[]{fullName, username, password};
 	}
+	
+	@Override
+	public String execute(ClientView cv, String outSymbol, String errorSymbol) throws Exception {	
+		Response res = cv.createUser(fullName, username, password);
+        
+		if (res.getStatus() == Response.Status.CREATED.getStatusCode()) {
+	        URI newUserLocation = res.getLocation();
+	        String path = newUserLocation.getPath();
+	        return outSymbol + "New user successfully created with id = " +
+        		   path.substring(path.lastIndexOf('/')+1);
+		} else {
+			return errorSymbol + "Error! " + res.readEntity(String.class);
+		}		
+	}	
 
 	public String getFullName() {
 		return fullName;

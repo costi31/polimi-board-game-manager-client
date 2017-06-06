@@ -1,6 +1,7 @@
 package com.herokuapp.polimiboardgamemanager.client.view.command;
 
 import com.beust.jcommander.Parameters;
+import com.herokuapp.polimiboardgamemanager.client.view.ClientView;
 
 @Parameters(commandNames=Command.QUIT, commandDescription="Quit application.")
 public class CommandQuit implements Command {
@@ -15,4 +16,8 @@ public class CommandQuit implements Command {
 		return null;
 	}
 
+	@Override
+	public String execute(ClientView cv, String outSymbol, String errorSymbol) throws Exception {
+		return null;
+	}
 }
