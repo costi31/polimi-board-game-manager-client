@@ -10,12 +10,14 @@ import javax.ws.rs.core.Response;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.herokuapp.polimiboardgamemanager.client.view.ClientView;
-import com.herokuapp.polimiboardgamemanager.model.Play;
 
-@Parameters(commandNames=Command.CREATE_PLAY,
-			commandDescription="Create a new play with the desired information."
-					+ "(You must login before)")
-public class CommandCreatePlay implements Command {
+@Parameters(commandNames=Command.UPDATE_PLAY,
+			commandDescription="Update a play with the optional provided information (you must login before) "
+					+ "or create a new one if the id cannot be found.")
+public class CommandUpdatePlay implements Command {
+	
+	@Parameter(names="-id", description="play id", order=-1)
+	private Long id;
 	
 	@Parameter(names={"-uid", "-userCreatorId"}, description="Id of the user which the play is associated to.", order=0)
 	private Long userId;
@@ -40,16 +42,19 @@ public class CommandCreatePlay implements Command {
 
 	@Override
 	public String getName() {
-		return CREATE_PLAY;
+		return UPDATE_PLAY;
 	}
 
 	@Override
 	public Object[] getParameters() {
-		return new Object[]{userId, boardGameId, dateString, playersInvolved, completed, timeToCompleteString, userWinnerId};
+		return new Object[]{id, userId, boardGameId, dateString, playersInvolved, completed, timeToCompleteString, userWinnerId};
 	}
 	
 	@Override
 	public String execute(ClientView cv, String outSymbol, String errorSymbol) throws Exception {	
+		if (id == null)
+			return errorSymbol + "Error! You must specify an id!";
+		
     	SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy - hh:mm a");
     	Calendar date = null;
     	if (dateString != null) {
@@ -57,17 +62,23 @@ public class CommandCreatePlay implements Command {
 	    	date.setTime(dateFormatter.parse(dateString));
     	}
 		
-		Response res = cv.createPlay(new Play (cv.getUser(userId), cv.getBoardGame(boardGameId), date, playersInvolved, 
-											   completed, (timeToCompleteString != null) ? Time.valueOf(timeToCompleteString) : null, cv.getUser(userWinnerId)));
+		Response res = cv.updatePlay(id, userId, boardGameId, date, playersInvolved, completed,
+									 (timeToCompleteString != null ? Time.valueOf(timeToCompleteString) : null), userWinnerId);
         
-		if (res.getStatus() == Response.Status.CREATED.getStatusCode()) {
+		if (res.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
+	        return outSymbol + "Play with id " + id + " has been updated succesfully.";
+		} else if (res.getStatus() == Response.Status.CREATED.getStatusCode()) {
 	        URI newUserLocation = res.getLocation();
 	        String path = newUserLocation.getPath();
 	        return outSymbol + "New play successfully created with id = " +
-        		   path.substring(path.lastIndexOf('/')+1);
+	        	   path.substring(path.lastIndexOf('/')+1);
 		} else {
-			return errorSymbol + "Error! " + res.readEntity(String.class);
+			return errorSymbol + "Error! "+res.readEntity(String.class);
 		}		
+	}
+	
+	public Long getId() {
+		return id;
 	}
 
 	public Long getUserId() {
@@ -97,6 +108,5 @@ public class CommandCreatePlay implements Command {
 	public Long getUserWinnerId() {
 		return userWinnerId;
 	}
-
 
 }
