@@ -17,11 +17,13 @@ import javax.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.ClientConfig;
 
 import com.herokuapp.polimiboardgamemanager.client.view.command.Command;
+import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 import com.herokuapp.polimiboardgamemanager.model.User;
 
 public abstract class ClientView {
 	
 	private static final String USERS_PATH = "/users";
+	private static final String BOARDGAMES_PATH = "/boardgames";
 	
 	private static ClientView instance = null;
 	
@@ -46,6 +48,10 @@ public abstract class ClientView {
 	public abstract void run();
 	
 	protected abstract void executeCommand(Command com) throws Exception;
+	
+    // ======================================
+    // =          User management           =
+    // ======================================
 	
 	public Response loginUser(String username, String password) {
 		authorizationBearer = null;
@@ -101,6 +107,20 @@ public abstract class ClientView {
 				.header(HttpHeaders.AUTHORIZATION,  authorizationBearer)
 				.delete();
 	}
+	
+    // ======================================
+    // =       Board games management       =
+    // ======================================	
+	
+	public Response createBoardGame(BoardGame boardGame) {
+        return target.path(BOARDGAMES_PATH).request().
+        		header(HttpHeaders.AUTHORIZATION, authorizationBearer).
+        		post(Entity.entity(boardGame, MediaType.APPLICATION_JSON_TYPE));
+	}
+	
+    // ======================================
+    // =               Setup                =
+    // ======================================		
 	
 	private void setup() {
         config = new ClientConfig();

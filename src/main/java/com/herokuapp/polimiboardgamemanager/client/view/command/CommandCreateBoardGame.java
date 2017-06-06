@@ -1,13 +1,17 @@
 package com.herokuapp.polimiboardgamemanager.client.view.command;
 
-import java.io.PrintStream;
-import java.util.Scanner;
+import java.net.URI;
+
+import javax.ws.rs.core.Response;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.herokuapp.polimiboardgamemanager.client.view.ClientView;
+import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 
-@Parameters(commandNames=Command.CREATE_BOARDGAME, commandDescription="Create a new board game with the desired information.")
+@Parameters(commandNames=Command.CREATE_BOARDGAME,
+			commandDescription="Create a new board game with the desired information."
+					+ "(You must be a super user authenitcated)")
 public class CommandCreateBoardGame implements Command {
 	
 	@Parameter(names={"-n", "-name"}, description="board game name", order=0)
@@ -31,7 +35,16 @@ public class CommandCreateBoardGame implements Command {
 	
 	@Override
 	public String execute(ClientView cv, String outSymbol, String errorSymbol) throws Exception {	
-		return "";
+		Response res = cv.createBoardGame(new BoardGame (name, designers, cover));
+        
+		if (res.getStatus() == Response.Status.CREATED.getStatusCode()) {
+	        URI newUserLocation = res.getLocation();
+	        String path = newUserLocation.getPath();
+	        return outSymbol + "New board game successfully created with id = " +
+        		   path.substring(path.lastIndexOf('/')+1);
+		} else {
+			return errorSymbol + "Error! " + res.readEntity(String.class);
+		}		
 	}
 
 	public String getGameName() {
