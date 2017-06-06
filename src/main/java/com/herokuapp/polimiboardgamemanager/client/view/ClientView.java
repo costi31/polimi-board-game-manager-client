@@ -74,13 +74,27 @@ public abstract class ClientView {
 	
 	protected Response createUser(String fullName, String username, String password) {
         Form form = new Form();
-        // Here I assume that there is a test user with username=bob and password=bob
         form.param("fullName", fullName);
         form.param("username", username);
         form.param("password", password);
         return target.path(USERS_PATH).request().post(Entity.form(form));
         
 	}
+	
+	protected Response updateUser(long id, String fullName, String username, String password) {
+        Form form = new Form();
+        if (fullName != null)
+        	form.param("fullName", fullName);
+        if (username != null)
+        	form.param("username", username);    
+        if (password != null)
+        	form.param("password", password);
+        
+        return target.path(USERS_PATH+"/"+id).request()
+        		.header(HttpHeaders.AUTHORIZATION, authorizationBearer)
+        		.put(Entity.form(form));
+        
+	}	
 	
 	private void setup() {
         config = new ClientConfig();

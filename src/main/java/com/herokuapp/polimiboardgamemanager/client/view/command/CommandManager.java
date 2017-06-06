@@ -78,6 +78,7 @@ public class CommandManager {
 		commandsMap.put(Command.SHOW_USERS, new CommandShowUsers());
 		commandsMap.put(Command.SHOW_USER, new CommandShowUser());
 		commandsMap.put(Command.CREATE_USER, new CommandCreateUser());
+		commandsMap.put(Command.UPDATE_USER, new CommandUpdateUser());
 		
 		// Setup JCommander
 		jc = JCommander.newBuilder().build();

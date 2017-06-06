@@ -7,6 +7,7 @@ public interface Command {
 	public static final String SHOW_USERS = "show_users";
 	public static final String SHOW_USER = "show_u";
 	public static final String CREATE_USER = "create_u";
+	public static final String UPDATE_USER = "update_u";
 	
 	public String getName();
 	public Object[] getParameters();
