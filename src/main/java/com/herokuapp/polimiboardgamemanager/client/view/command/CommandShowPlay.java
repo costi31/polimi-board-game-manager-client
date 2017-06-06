@@ -8,7 +8,7 @@ import com.herokuapp.polimiboardgamemanager.model.Play;
 @Parameters(commandNames=Command.SHOW_PLAY, commandDescription="Show the information of the play with the desired id.")
 public class CommandShowPlay implements Command {
 	
-	@Parameter(names={"-uid", "-userId"}, description="Id of the user which the play is associated to.")
+	@Parameter(names={"-uid", "-userCreatorId"}, description="Id of the user which the play is associated to.")
 	private Long userId;
 	
 	@Parameter(names="-id", description="Id of play.")

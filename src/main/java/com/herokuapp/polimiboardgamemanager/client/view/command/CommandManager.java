@@ -78,6 +78,7 @@ public class CommandManager {
 		
 		commandsMap.put(Command.SHOW_USERS, new CommandShowUsers());
 		commandsMap.put(Command.SHOW_USER, new CommandShowUser());
+		commandsMap.put(Command.COUNT_USERS, new CommandCountUsers());
 		commandsMap.put(Command.CREATE_USER, new CommandCreateUser());
 		commandsMap.put(Command.UPDATE_USER, new CommandUpdateUser());
 		commandsMap.put(Command.DELETE_USER, new CommandDeleteUser());
@@ -90,6 +91,7 @@ public class CommandManager {
 		
 		commandsMap.put(Command.SHOW_PLAYS, new CommandShowPlays());
 		commandsMap.put(Command.SHOW_PLAY, new CommandShowPlay());
+		commandsMap.put(Command.DELETE_PLAY, new CommandDeletePlay());
 		
 		// Setup JCommander
 		jc = JCommander.newBuilder().build();

@@ -85,6 +85,10 @@ public abstract class ClientView {
 		}
 	}
 	
+	public long getUsersCount() {
+		return target.path(USERS_PATH+"/count").request(MediaType.TEXT_PLAIN_TYPE).get(Long.class);
+	}
+	
 	public Response createUser(String fullName, String username, String password) {
         Form form = new Form();
         form.param("fullName", fullName);
@@ -135,6 +139,10 @@ public abstract class ClientView {
 		} catch(Exception e) {
 			return null;
 		}
+	}	
+	
+	public long getBoardGamesCount() {
+		return target.path(BOARDGAMES_PATH).request(MediaType.TEXT_PLAIN_TYPE).get(Long.class);
 	}	
 	
 	public Response createBoardGame(BoardGame boardGame) {
