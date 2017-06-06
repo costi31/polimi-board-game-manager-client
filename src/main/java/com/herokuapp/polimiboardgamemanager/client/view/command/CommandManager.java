@@ -85,6 +85,8 @@ public class CommandManager {
 		commandsMap.put(Command.SHOW_BOARDGAMES, new CommandShowBoardGames());
 		commandsMap.put(Command.SHOW_BOARDGAME, new CommandShowBoardGame());
 		commandsMap.put(Command.CREATE_BOARDGAME, new CommandCreateBoardGame());
+		commandsMap.put(Command.UPDATE_BOARDGAME, new CommandUpdateBoardGame());
+		commandsMap.put(Command.DELETE_BOARDGAME, new CommandDeleteBoardGame());
 		
 		// Setup JCommander
 		jc = JCommander.newBuilder().build();

@@ -16,6 +16,8 @@ public interface Command {
 	public static final String SHOW_BOARDGAMES = "show_boardgames";
 	public static final String SHOW_BOARDGAME = "show_b";
 	public static final String CREATE_BOARDGAME = "create_b";
+	public static final String UPDATE_BOARDGAME = "update_b";
+	public static final String DELETE_BOARDGAME = "delete_b";
 	
 	public String getName();
 	public Object[] getParameters();

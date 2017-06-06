@@ -50,6 +50,7 @@ public class CommandLine extends ClientView {
     			printInputLine();					
     		} catch(Exception e) {
     			out.println(ERROR_SYMBOL + "Command error! Retry!");
+    			e.printStackTrace();
     			printInputLine();
     		}
     		

@@ -75,7 +75,11 @@ public abstract class ClientView {
 	}
 	
 	public User getUser(long id) {
-		return target.path(USERS_PATH+"/"+id).request(MediaType.APPLICATION_JSON_TYPE).get(User.class);
+		try {
+			return target.path(USERS_PATH+"/"+id).request(MediaType.APPLICATION_JSON_TYPE).get(User.class);
+		} catch(Exception e) {
+			return null;
+		}
 	}
 	
 	public Response createUser(String fullName, String username, String password) {
@@ -123,7 +127,11 @@ public abstract class ClientView {
 	}	
 	
 	public BoardGame getBoardGame(long id) {
-		return target.path(BOARDGAMES_PATH+"/"+id).request(MediaType.APPLICATION_JSON_TYPE).get(BoardGame.class);
+		try {
+			return target.path(BOARDGAMES_PATH+"/"+id).request(MediaType.APPLICATION_JSON_TYPE).get(BoardGame.class);
+		} catch(Exception e) {
+			return null;
+		}
 	}	
 	
 	public Response createBoardGame(BoardGame boardGame) {
@@ -131,6 +139,31 @@ public abstract class ClientView {
         		header(HttpHeaders.AUTHORIZATION, authorizationBearer).
         		post(Entity.entity(boardGame, MediaType.APPLICATION_JSON_TYPE));
 	}
+	
+	public Response updateBoardGame(long id, String name, String designers, String cover) {        
+        BoardGame b = getBoardGame(id);
+        if (b == null)
+        	b = new BoardGame(name, designers, cover);
+        
+        if (name != null)
+        	b.setName(name);
+        if (designers != null)
+        	b.setDesigners(designers);
+        if (cover != null)
+        	b.setCover(cover);
+        
+        System.out.println(b);
+        
+        return target.path(BOARDGAMES_PATH+"/"+id).request()
+        		.header(HttpHeaders.AUTHORIZATION, authorizationBearer)
+        		.put(Entity.entity(b, MediaType.APPLICATION_JSON_TYPE));        
+	}	
+	
+	public Response deleteBoardGame(long id) {
+		return target.path(BOARDGAMES_PATH+"/"+id).request()
+				.header(HttpHeaders.AUTHORIZATION,  authorizationBearer)
+				.delete();
+	}	
 	
     // ======================================
     // =               Setup                =
