@@ -23,7 +23,7 @@ public class CommandCreatePlay implements Command {
 	@Parameter(names={"-bgid", "-boardGameId"}, description="Id of the board game which the play is associated to.", order=1)
 	private Long boardGameId;
 	
-	@Parameter(names={"-d", "-date"}, description="date in format: dd/MM/yyyy - hh:mm am/pm", order=2)
+	@Parameter(names={"-d", "-date"}, description="date in format: \"dd/MM/yyyy - hh:mm am/pm\"", order=2)
 	private String dateString;
 	
 	@Parameter(names={"-p", "-playersInvolved"}, description="number of players involved", order=3)
@@ -57,8 +57,10 @@ public class CommandCreatePlay implements Command {
 	    	date.setTime(dateFormatter.parse(dateString));
     	}
 		
-		Response res = cv.createPlay(new Play (cv.getUser(userId), cv.getBoardGame(boardGameId), date, playersInvolved, 
-											   completed, (timeToCompleteString != null) ? Time.valueOf(timeToCompleteString) : null, cv.getUser(userWinnerId)));
+		Response res = cv.createPlay(new Play (cv.getUser(userId), cv.getBoardGame(boardGameId), date,
+											   playersInvolved != null ? playersInvolved : 0, completed,
+											   timeToCompleteString != null ? Time.valueOf(timeToCompleteString) : null,
+											   userWinnerId != null ? cv.getUser(userWinnerId) : null) );
         
 		if (res.getStatus() == Response.Status.CREATED.getStatusCode()) {
 	        URI newUserLocation = res.getLocation();

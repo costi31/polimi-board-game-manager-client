@@ -207,8 +207,10 @@ public abstract class ClientView {
 		
         Play p = getPlay(userId, id);
         if (p == null)
-        	p = new Play(getUser(userId), getBoardGame(boardGameId), date, playersInvolved, 
-        				 completed, timeToComplete, getUser(userWinnerId));
+        	p = new Play(getUser(userId), getBoardGame(boardGameId), date,
+        				 playersInvolved != null ? playersInvolved : 0, 
+        				 completed, timeToComplete,
+        				 userWinnerId != null ? getUser(userWinnerId) : null);
         
         if (boardGameId != null)
         	p.setBoardGame(getBoardGame(boardGameId));
