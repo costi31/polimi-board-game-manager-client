@@ -34,6 +34,8 @@ public abstract class ClientView {
 	protected Client client;
 	protected WebTarget target;
 	protected String authorizationBearer;
+	/** Id of the authenticated user */
+	protected Long authUserId = null;
 	
 	public static ClientView getCliInstance() {
 		if (instance == null) {
@@ -44,26 +46,42 @@ public abstract class ClientView {
 		return instance;
 	}
 	
-    private static URI getBaseURI() {
+    protected static URI getBaseURI() {
         return UriBuilder.fromUri("https://polimi-board-game-manager.herokuapp.com/api/").build();
-    }   	
+    }   
+    
+    protected static Long getIdFromURI(URI uri) {
+    	try {
+	        String path = uri.getPath();
+	        return Long.parseLong( path.substring(path.lastIndexOf('/')+1) );
+    	} catch(Exception e) {
+	    	return null;
+	    }
+    }
 	
 	public abstract void run();
 	
 	protected abstract void executeCommand(Command com) throws Exception;
 	
+	public Long getAuthUserId() {
+		return authUserId;
+	}	
+	
     // ======================================
     // =          User management           =
     // ======================================
-	
+
 	public Response loginUser(String username, String password) {
 		authorizationBearer = null;
+		authUserId = null;
         Form form = new Form();
         form.param("username", username);
         form.param("password", password);
         Response res = target.path(USERS_PATH+"/login").request().post(Entity.form(form));
-        if (res.getStatus() == Response.Status.OK.getStatusCode())
+        if (res.getStatus() == Response.Status.OK.getStatusCode()) {
         	authorizationBearer = res.getHeaderString(HttpHeaders.AUTHORIZATION);
+        	authUserId = getIdFromURI(res.getLink("self").getUri());
+        }
         return res;
 	}
 	
@@ -98,7 +116,7 @@ public abstract class ClientView {
         
 	}
 	
-	public Response updateUser(Long id, String fullName, String username, String password) {
+	public Response updateUser(String fullName, String username, String password) {
         Form form = new Form();
         if (fullName != null)
         	form.param("fullName", fullName);
@@ -107,14 +125,14 @@ public abstract class ClientView {
         if (password != null)
         	form.param("password", password);
         
-        return target.path(USERS_PATH+"/"+id).request()
+        return target.path(USERS_PATH+"/"+authUserId).request()
         		.header(HttpHeaders.AUTHORIZATION, authorizationBearer)
         		.put(Entity.form(form));
         
 	}
 	
-	public Response deleteUser(Long id) {
-		return target.path(USERS_PATH+"/"+id).request()
+	public Response deleteUser() {
+		return target.path(USERS_PATH+"/"+authUserId).request()
 				.header(HttpHeaders.AUTHORIZATION,  authorizationBearer)
 				.delete();
 	}
@@ -197,17 +215,17 @@ public abstract class ClientView {
 	}	
 	
 	public Response createPlay(Play play) {
-        return target.path(USERS_PATH+"/"+play.getUserCreator().getId()+"/plays").request().
+        return target.path(USERS_PATH+"/"+authUserId+"/plays").request().
         		header(HttpHeaders.AUTHORIZATION, authorizationBearer).
         		post(Entity.entity(play, MediaType.APPLICATION_JSON_TYPE));
 	}
 	
-	public Response updatePlay(Long userId, Long id, Long boardGameId, Calendar date, Integer playersInvolved, 
+	public Response updatePlay(Long id, Long boardGameId, Calendar date, Integer playersInvolved, 
 							   boolean completed, Time timeToComplete, Long userWinnerId) { 
 		
-        Play p = getPlay(userId, id);
+        Play p = getPlay(authUserId, id);
         if (p == null)
-        	p = new Play(getUser(userId), getBoardGame(boardGameId), date,
+        	p = new Play(getUser(authUserId), getBoardGame(boardGameId), date,
         				 playersInvolved != null ? playersInvolved : 0, 
         				 completed, timeToComplete,
         				 userWinnerId != null ? getUser(userWinnerId) : null);
@@ -221,13 +239,13 @@ public abstract class ClientView {
         if (userWinnerId != null)
         	p.setUserWinner(getUser(userWinnerId));
         
-        return target.path(USERS_PATH+"/"+userId+"/plays/"+id).request()
+        return target.path(USERS_PATH+"/"+authUserId+"/plays/"+id).request()
         		.header(HttpHeaders.AUTHORIZATION, authorizationBearer)
         		.put(Entity.entity(p, MediaType.APPLICATION_JSON_TYPE));        
 	}	
 	
-	public Response deletePlay(Long userId, Long id) {
-		return target.path(USERS_PATH+"/"+userId+"/plays/"+id).request()
+	public Response deletePlay(Long id) {
+		return target.path(USERS_PATH+"/"+authUserId+"/plays/"+id).request()
 				.header(HttpHeaders.AUTHORIZATION,  authorizationBearer)
 				.delete();
 	}		

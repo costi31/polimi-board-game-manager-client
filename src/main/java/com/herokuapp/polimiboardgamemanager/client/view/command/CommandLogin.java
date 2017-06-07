@@ -28,7 +28,9 @@ public class CommandLogin implements Command {
 	public String execute(ClientView cv, String outSymbol, String errorSymbol) throws Exception {
 		Response res = cv.loginUser(username, password);
 		if (res.getStatus() == Response.Status.OK.getStatusCode())
-			return outSymbol + "Login successful!";
+			return outSymbol + "Login successful! Your user id is " + cv.getAuthUserId() +"\n"
+					+ "Now you can manager user account, your plays or even board games if you "
+					+ "are a power user.";
 		else
 			return errorSymbol + "Login failed! Wrong username or password!";
 	}

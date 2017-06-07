@@ -5,10 +5,12 @@ import com.beust.jcommander.Parameters;
 import com.herokuapp.polimiboardgamemanager.client.view.ClientView;
 import com.herokuapp.polimiboardgamemanager.model.User;
 
-@Parameters(commandNames=Command.SHOW_USER, commandDescription="Show the information of the user with the desired id.")
+@Parameters(commandNames=Command.SHOW_USER,
+			commandDescription="Show the information of your profile (you must login before)"
+					+ " or the information of the user with the desired id.")
 public class CommandShowUser implements Command {
 	
-	@Parameter(names="-id", description="user id")
+	@Parameter(names="-id", description="Id of the user profile you want to see.")
 	private Long id;
 
 	@Override
@@ -23,6 +25,8 @@ public class CommandShowUser implements Command {
 	
 	@Override
 	public String execute(ClientView cv, String outSymbol, String errorSymbol) throws Exception {
+		if (id == null)
+			id = cv.getAuthUserId();
 		User u = cv.getUser(id);
 		if (u != null)
 			return outSymbol + "User " + id + " info: "+u.toString();

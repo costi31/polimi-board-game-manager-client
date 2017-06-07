@@ -7,11 +7,8 @@ import com.beust.jcommander.Parameters;
 import com.herokuapp.polimiboardgamemanager.client.view.ClientView;
 
 @Parameters(commandNames=Command.DELETE_PLAY,
-			commandDescription="Delete a play (you must login before).")
+			commandDescription="Delete a play created by you (you must login before).")
 public class CommandDeletePlay implements Command {
-	
-	@Parameter(names={"-uid", "-userId"}, description="Id of the user which the play is associated to.")
-	private Long userId;
 	
 	@Parameter(names="-id", description="play id")
 	private Long id;
@@ -31,7 +28,7 @@ public class CommandDeletePlay implements Command {
 		if (id == null)
 			return errorSymbol + "Error! You must specify an id!";
 		
-		Response res = cv.deletePlay(userId, id);
+		Response res = cv.deletePlay(id);
         
 		if (res.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
 	        return outSymbol + "Play with id " + id + " has been deleted succesfully.";
@@ -39,10 +36,6 @@ public class CommandDeletePlay implements Command {
 			return errorSymbol + "Error! "+res.readEntity(String.class);
 		}	
 	}		
-
-	public Long getUserId() {
-		return userId;
-	}
 
 	public Long getId() {
 		return id;

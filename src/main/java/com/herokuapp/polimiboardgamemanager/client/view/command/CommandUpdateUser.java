@@ -40,7 +40,7 @@ public class CommandUpdateUser implements Command {
 		if (id == null)
 			return errorSymbol + "Error! You must specify an id!";
 		
-		Response res = cv.updateUser(id, fullName, username, password);
+		Response res = cv.updateUser(fullName, username, password);
         
 		if (res.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
 	        return outSymbol + "User with id " + id + " has been updated succesfully.";

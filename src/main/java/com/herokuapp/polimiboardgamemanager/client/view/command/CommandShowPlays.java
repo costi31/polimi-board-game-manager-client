@@ -10,7 +10,8 @@ import com.herokuapp.polimiboardgamemanager.model.Play;
 @Parameters(commandNames=Command.SHOW_PLAYS, commandDescription="Show the plays of the desired user with optional filter and ordering criteria.")
 public class CommandShowPlays implements Command {
 	
-	@Parameter(names={"-uid", "-userId"}, description="Id of the user which the play is associated to.")
+	@Parameter(names={"-uid", "-userId"}, description="Id of the user which the play is associated to. "
+			+ "(If you don't set it and you are authenticated then your plays are showed)")
 	private Long userId;
 	
 	@Parameter(names = {"--f", "--filter"},
@@ -35,6 +36,8 @@ public class CommandShowPlays implements Command {
 	
 	@Override
 	public String execute(ClientView cv, String outSymbol, String errorSymbol) throws Exception {
+		if (userId == null)
+			userId = cv.getAuthUserId();
 		if (userId == null)
 			return errorSymbol + "Error! You must specify an id!";
 		

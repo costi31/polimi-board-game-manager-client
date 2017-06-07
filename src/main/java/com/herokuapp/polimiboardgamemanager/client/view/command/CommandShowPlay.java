@@ -26,6 +26,8 @@ public class CommandShowPlay implements Command {
 	
 	@Override
 	public String execute(ClientView cv, String outSymbol, String errorSymbol) throws Exception {
+		if (userId == null)
+			userId = cv.getAuthUserId();	
 		Play p = cv.getPlay(userId, id);
 		if (p != null)
 			return outSymbol + "Play " + id + " info: "+p.toString();

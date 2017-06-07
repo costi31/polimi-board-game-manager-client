@@ -12,15 +12,12 @@ import com.beust.jcommander.Parameters;
 import com.herokuapp.polimiboardgamemanager.client.view.ClientView;
 
 @Parameters(commandNames=Command.UPDATE_PLAY,
-			commandDescription="Update a play with the optional provided information (you must login before) "
+			commandDescription="Update a play of yours with the optional provided information (you must login before) "
 					+ "or create a new one if the id cannot be found.")
 public class CommandUpdatePlay implements Command {
 	
-	@Parameter(names="-id", description="play id", order=-1)
+	@Parameter(names="-id", description="play id", order=0)
 	private Long id;
-	
-	@Parameter(names={"-uid", "-userCreatorId"}, description="Id of the user which the play is associated to.", order=0)
-	private Long userId;
 	
 	@Parameter(names={"-bgid", "-boardGameId"}, description="Id of the board game which the play is associated to.", order=1)
 	private Long boardGameId;
@@ -47,7 +44,7 @@ public class CommandUpdatePlay implements Command {
 
 	@Override
 	public Object[] getParameters() {
-		return new Object[]{id, userId, boardGameId, dateString, playersInvolved, completed, timeToCompleteString, userWinnerId};
+		return new Object[]{id, boardGameId, dateString, playersInvolved, completed, timeToCompleteString, userWinnerId};
 	}
 	
 	@Override
@@ -62,7 +59,7 @@ public class CommandUpdatePlay implements Command {
 	    	date.setTime(dateFormatter.parse(dateString));
     	}
 		
-		Response res = cv.updatePlay(id, userId, boardGameId, date, playersInvolved, completed,
+		Response res = cv.updatePlay(id, boardGameId, date, playersInvolved, completed,
 									 (timeToCompleteString != null ? Time.valueOf(timeToCompleteString) : null), userWinnerId);
         
 		if (res.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
@@ -79,10 +76,6 @@ public class CommandUpdatePlay implements Command {
 	
 	public Long getId() {
 		return id;
-	}
-
-	public Long getUserId() {
-		return userId;
 	}
 
 	public Long getBoardGameId() {
