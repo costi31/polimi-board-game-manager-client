@@ -23,20 +23,40 @@ import com.herokuapp.polimiboardgamemanager.model.BoardGame;
 import com.herokuapp.polimiboardgamemanager.model.Play;
 import com.herokuapp.polimiboardgamemanager.model.User;
 
+/**
+ * The Class ClientView.
+ */
 public abstract class ClientView {
 	
+	/** The Constant USERS_PATH. */
 	private static final String USERS_PATH = "/users";
+	
+	/** The Constant BOARDGAMES_PATH. */
 	private static final String BOARDGAMES_PATH = "/boardgames";
 	
+	/** The instance. */
 	private static ClientView instance = null;
 	
+	/** The client config. */
 	protected ClientConfig config;
+	
+	/** The client. */
 	protected Client client;
+	
+	/** The target. */
 	protected WebTarget target;
+	
+	/** The authorization bearer. */
 	protected String authorizationBearer;
-	/** Id of the authenticated user */
+	
+	/**  Id of the authenticated user. */
 	protected Long authUserId = null;
 	
+	/**
+	 * Gets the cli instance.
+	 *
+	 * @return the cli instance
+	 */
 	public static ClientView getCliInstance() {
 		if (instance == null) {
 			instance = new CommandLine();
@@ -46,10 +66,21 @@ public abstract class ClientView {
 		return instance;
 	}
 	
+    /**
+     * Gets the base URI.
+     *
+     * @return the base URI
+     */
     protected static URI getBaseURI() {
         return UriBuilder.fromUri("https://polimi-board-game-manager.herokuapp.com/api/").build();
     }   
     
+    /**
+     * Gets the id from URI.
+     *
+     * @param uri the uri
+     * @return the id from URI
+     */
     protected static Long getIdFromURI(URI uri) {
     	try {
 	        String path = uri.getPath();
@@ -59,10 +90,24 @@ public abstract class ClientView {
 	    }
     }
 	
+	/**
+	 * Run.
+	 */
 	public abstract void run();
 	
+	/**
+	 * Execute command.
+	 *
+	 * @param com the command
+	 * @throws Exception the exception
+	 */
 	protected abstract void executeCommand(Command com) throws Exception;
 	
+	/**
+	 * Gets the authenticated user id.
+	 *
+	 * @return the auth user id
+	 */
 	public Long getAuthUserId() {
 		return authUserId;
 	}	
@@ -71,7 +116,14 @@ public abstract class ClientView {
     // =          User management           =
     // ======================================
 
-	public Response loginUser(String username, String password) {
+	/**
+     * Login user.
+     *
+     * @param username the username
+     * @param password the password
+     * @return the response
+     */
+    public Response loginUser(String username, String password) {
 		authorizationBearer = null;
 		authUserId = null;
         Form form = new Form();
@@ -85,6 +137,13 @@ public abstract class ClientView {
         return res;
 	}
 	
+	/**
+	 * Gets the all users.
+	 *
+	 * @param filters the filters
+	 * @param orders the orders
+	 * @return the all users
+	 */
 	public List<User> getAllUsers(Object[] filters, Object[] orders) {
 		WebTarget tempTarget = target.path(USERS_PATH);
 		if (filters != null)
@@ -95,6 +154,12 @@ public abstract class ClientView {
 		return tempTarget.request(MediaType.APPLICATION_JSON_TYPE).get(new GenericType<List<User>>() {});
 	}
 	
+	/**
+	 * Gets the user.
+	 *
+	 * @param id the id
+	 * @return the user
+	 */
 	public User getUser(long id) {
 		try {
 			return target.path(USERS_PATH+"/"+id).request(MediaType.APPLICATION_JSON_TYPE).get(User.class);
@@ -103,10 +168,23 @@ public abstract class ClientView {
 		}
 	}
 	
+	/**
+	 * Gets the users count.
+	 *
+	 * @return the users count
+	 */
 	public long getUsersCount() {
 		return target.path(USERS_PATH+"/count").request(MediaType.TEXT_PLAIN_TYPE).get(Long.class);
 	}
 	
+	/**
+	 * Creates the user.
+	 *
+	 * @param fullName the full name
+	 * @param username the username
+	 * @param password the password
+	 * @return the response
+	 */
 	public Response createUser(String fullName, String username, String password) {
         Form form = new Form();
         form.param("fullName", fullName);
@@ -116,6 +194,14 @@ public abstract class ClientView {
         
 	}
 	
+	/**
+	 * Update user.
+	 *
+	 * @param fullName the full name
+	 * @param username the username
+	 * @param password the password
+	 * @return the response
+	 */
 	public Response updateUser(String fullName, String username, String password) {
         Form form = new Form();
         if (fullName != null)
@@ -131,6 +217,11 @@ public abstract class ClientView {
         
 	}
 	
+	/**
+	 * Delete user.
+	 *
+	 * @return the response
+	 */
 	public Response deleteUser() {
 		return target.path(USERS_PATH+"/"+authUserId).request()
 				.header(HttpHeaders.AUTHORIZATION,  authorizationBearer)
@@ -141,7 +232,14 @@ public abstract class ClientView {
     // =       Board games management       =
     // ======================================	
 	
-	public List<BoardGame> getAllBoardGames(Object[] filters, Object[] orders) {
+	/**
+     * Gets the all board games.
+     *
+     * @param filters the filters
+     * @param orders the orders
+     * @return the all board games
+     */
+    public List<BoardGame> getAllBoardGames(Object[] filters, Object[] orders) {
 		WebTarget tempTarget = target.path(BOARDGAMES_PATH);
 		if (filters != null)
 			tempTarget = tempTarget.queryParam("filter", filters);
@@ -151,6 +249,12 @@ public abstract class ClientView {
 		return tempTarget.request(MediaType.APPLICATION_JSON_TYPE).get(new GenericType<List<BoardGame>>() {});
 	}	
 	
+	/**
+	 * Gets the board game.
+	 *
+	 * @param id the id
+	 * @return the board game
+	 */
 	public BoardGame getBoardGame(Long id) {
 		try {
 			return target.path(BOARDGAMES_PATH+"/"+id).request(MediaType.APPLICATION_JSON_TYPE).get(BoardGame.class);
@@ -159,16 +263,36 @@ public abstract class ClientView {
 		}
 	}	
 	
+	/**
+	 * Gets the board games count.
+	 *
+	 * @return the board games count
+	 */
 	public long getBoardGamesCount() {
 		return target.path(BOARDGAMES_PATH).request(MediaType.TEXT_PLAIN_TYPE).get(Long.class);
 	}	
 	
+	/**
+	 * Creates the board game.
+	 *
+	 * @param boardGame the board game
+	 * @return the response
+	 */
 	public Response createBoardGame(BoardGame boardGame) {
         return target.path(BOARDGAMES_PATH).request().
         		header(HttpHeaders.AUTHORIZATION, authorizationBearer).
         		post(Entity.entity(boardGame, MediaType.APPLICATION_JSON_TYPE));
 	}
 	
+	/**
+	 * Update board game.
+	 *
+	 * @param id the id
+	 * @param name the name
+	 * @param designers the designers
+	 * @param cover the cover
+	 * @return the response
+	 */
 	public Response updateBoardGame(Long id, String name, String designers, String cover) {        
         BoardGame b = getBoardGame(id);
         if (b == null)
@@ -186,6 +310,12 @@ public abstract class ClientView {
         		.put(Entity.entity(b, MediaType.APPLICATION_JSON_TYPE));        
 	}	
 	
+	/**
+	 * Delete board game.
+	 *
+	 * @param id the id
+	 * @return the response
+	 */
 	public Response deleteBoardGame(Long id) {
 		return target.path(BOARDGAMES_PATH+"/"+id).request()
 				.header(HttpHeaders.AUTHORIZATION,  authorizationBearer)
@@ -196,7 +326,15 @@ public abstract class ClientView {
     // =       Plays management       =
     // ======================================	
 	
-	public List<Play> getAllPlays(Long userId, Object[] filters, Object[] orders) {
+	/**
+     * Gets the all plays.
+     *
+     * @param userId the user id
+     * @param filters the filters
+     * @param orders the orders
+     * @return the all plays
+     */
+    public List<Play> getAllPlays(Long userId, Object[] filters, Object[] orders) {
 		WebTarget tempTarget = target.path(USERS_PATH+"/"+userId+"/plays");
 		if (filters != null)
 			tempTarget = tempTarget.queryParam("filter", filters);
@@ -206,6 +344,13 @@ public abstract class ClientView {
 		return tempTarget.request(MediaType.APPLICATION_JSON_TYPE).get(new GenericType<List<Play>>() {});
 	}	
 	
+	/**
+	 * Gets the play.
+	 *
+	 * @param userId the user id
+	 * @param id the id
+	 * @return the play
+	 */
 	public Play getPlay(Long userId, Long id) {
 		try {
 			return target.path(USERS_PATH+"/"+userId+"/plays/"+id).request(MediaType.APPLICATION_JSON_TYPE).get(Play.class);
@@ -214,12 +359,30 @@ public abstract class ClientView {
 		}
 	}	
 	
+	/**
+	 * Creates the play.
+	 *
+	 * @param play the play
+	 * @return the response
+	 */
 	public Response createPlay(Play play) {
         return target.path(USERS_PATH+"/"+authUserId+"/plays").request().
         		header(HttpHeaders.AUTHORIZATION, authorizationBearer).
         		post(Entity.entity(play, MediaType.APPLICATION_JSON_TYPE));
 	}
 	
+	/**
+	 * Update play.
+	 *
+	 * @param id the id
+	 * @param boardGameId the board game id
+	 * @param date the date
+	 * @param playersInvolved the players involved
+	 * @param completed the completed
+	 * @param timeToComplete the time to complete
+	 * @param userWinnerId the user winner id
+	 * @return the response
+	 */
 	public Response updatePlay(Long id, Long boardGameId, Calendar date, Integer playersInvolved, 
 							   boolean completed, Time timeToComplete, Long userWinnerId) { 
 		
@@ -244,6 +407,12 @@ public abstract class ClientView {
         		.put(Entity.entity(p, MediaType.APPLICATION_JSON_TYPE));        
 	}	
 	
+	/**
+	 * Delete play.
+	 *
+	 * @param id the id
+	 * @return the response
+	 */
 	public Response deletePlay(Long id) {
 		return target.path(USERS_PATH+"/"+authUserId+"/plays/"+id).request()
 				.header(HttpHeaders.AUTHORIZATION,  authorizationBearer)
@@ -254,7 +423,10 @@ public abstract class ClientView {
     // =               Setup                =
     // ======================================		
 	
-	private void setup() {
+	/**
+     * Setup.
+     */
+    private void setup() {
         config = new ClientConfig();
         client = ClientBuilder.newClient(config);		
 		target = client.target(getBaseURI());

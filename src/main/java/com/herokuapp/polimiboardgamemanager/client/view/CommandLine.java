@@ -7,15 +7,30 @@ import com.herokuapp.polimiboardgamemanager.client.view.command.Command;
 import com.herokuapp.polimiboardgamemanager.client.view.command.CommandManager;
 
 
+/**
+ * The Class CommandLine.
+ */
 public class CommandLine extends ClientView {
 	
+	/** The Constant OUT_SYMBOL. */
 	private static final String OUT_SYMBOL = "# ";
+	
+	/** The Constant ERROR_SYMBOL. */
 	private static final String ERROR_SYMBOL = "*** ";
+	
+	/** The Constant IN_SYMBOL. */
 	private static final String IN_SYMBOL = " > ";
+	
+	/** The Constant LINE. */
 	private static final String LINE = "-----------------------------------------------";
 	
+	/** The out. */
 	private PrintStream out;
+	
+	/** The in. */
 	private Scanner in;
+	
+	/** The com manager. */
 	private CommandManager comManager;
 
     /**
@@ -27,6 +42,9 @@ public class CommandLine extends ClientView {
     	comManager = CommandManager.getInstance();
     }
     
+    /* (non-Javadoc)
+     * @see com.herokuapp.polimiboardgamemanager.client.view.ClientView#run()
+     */
     @Override
     public void run() {
     	out.println("Polimi Board Game Manager - Client");
@@ -61,6 +79,9 @@ public class CommandLine extends ClientView {
     	out.println(OUT_SYMBOL + "Quit!");
     }
     
+    /* (non-Javadoc)
+     * @see com.herokuapp.polimiboardgamemanager.client.view.ClientView#executeCommand(com.herokuapp.polimiboardgamemanager.client.view.command.Command)
+     */
     @Override
 	protected void executeCommand(Command com) throws Exception {
     	
@@ -73,6 +94,9 @@ public class CommandLine extends ClientView {
     	}
     }
     
+    /**
+     * Prints the menu.
+     */
     private void printMenu() {
     	out.println("");
     	out.println(LINE);
@@ -84,6 +108,9 @@ public class CommandLine extends ClientView {
     	printInputLine();
     }
     
+    /**
+     * Prints the input line.
+     */
     private void printInputLine() {
     	out.println(LINE);
     	out.println(OUT_SYMBOL + "Enter the desired command or \"help\" to show the menu:");

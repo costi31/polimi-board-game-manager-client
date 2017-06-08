@@ -9,19 +9,34 @@ import java.util.regex.Pattern;
 
 import com.beust.jcommander.JCommander;
 
+/**
+ * The Class CommandManager.
+ */
 public class CommandManager {
+	
+	/** The instance. */
 	private static CommandManager instance = null;
 	
+	/** The commands map. */
 	private Map<String, Command> commandsMap;
 	
+	/** The jc. */
 	private JCommander jc;
 	
+	/**
+	 * Instantiates a new command manager.
+	 */
 	private CommandManager() {
 		commandsMap = new HashMap<>();
 		
 		setupCommander();
 	}
 	
+	/**
+	 * Gets the single instance of CommandManager.
+	 *
+	 * @return single instance of CommandManager
+	 */
 	public static CommandManager getInstance() {
 		if (instance == null)
 			instance = new CommandManager();
@@ -29,10 +44,21 @@ public class CommandManager {
 		return instance;
 	}
 
+	/**
+	 * Gets the jc.
+	 *
+	 * @return the jc
+	 */
 	public JCommander getJc() {
 		return jc;
 	}
 	
+	/**
+	 * Parses the command line.
+	 *
+	 * @param commandLine the command line
+	 * @return the command
+	 */
 	public Command parseCommandLine(String commandLine) {
 		// Split the line by spaces except when they are inside quotes
 		List<String> matchList = new ArrayList<>();
@@ -54,6 +80,12 @@ public class CommandManager {
 		return parseCommand(matchList.toArray(new String[matchList.size()]));
 	}
 	
+	/**
+	 * Parses the command.
+	 *
+	 * @param commandArgs the command args
+	 * @return the command
+	 */
 	public Command parseCommand(String[] commandArgs) {
 		// I setup again the commander to reset all the commands
 		setupCommander();
@@ -61,15 +93,26 @@ public class CommandManager {
 		return commandsMap.get(jc.getParsedCommand());
 	}
 	
+	/**
+	 * Prints the usage.
+	 */
 	public void printUsage() {
 		jc.usage();
 	}
 	
+	/**
+	 * Prints the usage.
+	 *
+	 * @param commands the commands
+	 */
 	public void printUsage(String[] commands) {
 		for (String c: commands)
 			jc.usage(c);
 	}	
 	
+	/**
+	 * Setup commander.
+	 */
 	private void setupCommander() {
 		// Setup the map of commands
 		commandsMap.put(Command.HELP, new CommandHelp());
